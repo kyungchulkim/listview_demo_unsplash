@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from "react";
 import ListColumn from './ListColumn'
 import './Main.css'
-import tempdata from './temp.json';
+import Unsplash, { toJson } from 'unsplash-js';
+
 export default function Main() {
-    let data = tempdata;
 
     const [data1, setData1] = useState([]);
     const [data2, setData2] = useState([]);
     const [data3, setData3] = useState([]);
     
-    let dealsPage = 0;
-    let endPage = 5;
+    let dealsPage = 1;
+    let endPage = 6;
     let infinityStauts = true;
     
+    const unsplash = new Unsplash({ accessKey: "Eyy1rHC_Ydz93mGBXtTiWdasAiGkN9-VPMs8I3HO-WQ" });
+
     useEffect(() => {  
-        data.map((array, index) => {    
-            if(index % 3 === 0)
-            setData1(data1 => [...data1,array])
-            else if(index % 3 === 1)
-            setData2(data2 => [...data2,array])
-            else
-            setData3(data3 => [...data3,array])
+        unsplash.photos.listPhotos(dealsPage,15,"latest")
+        .then(toJson)
+        .then(json => {
+            
+            json.map((array, index) => {    
+                if(index % 3 === 0)
+                setData1(data1 => [...data1,array])
+                else if(index % 3 === 1)
+                setData2(data2 => [...data2,array])
+                else
+                setData3(data3 => [...data3,array])
+            })
         })
+        
     
         const handleScroll = () => {
             const winScroll =
@@ -40,14 +48,18 @@ export default function Main() {
           ) {
             infinityStauts = false
             dealsPage += 1;
-            
-            data.map((array, index) => {    
-                if(index % 3 === 0)
-                setData1(data1 => [...data1,array])
-                else if(index % 3 === 1)
-                setData2(data2 => [...data2,array])
-                else
-                setData3(data3 => [...data3,array])
+            unsplash.photos.listPhotos(dealsPage,15,"latest")
+            .then(toJson)
+            .then(json => {
+
+                json.map((array, index) => {    
+                    if(index % 3 === 0)
+                    setData1(data1 => [...data1,array])
+                    else if(index % 3 === 1)
+                    setData2(data2 => [...data2,array])
+                    else
+                    setData3(data3 => [...data3,array])
+                })
             })
           }
           infinityStauts = true
